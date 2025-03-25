@@ -1,7 +1,7 @@
 import {describe,expect,it} from "vitest";
 import {createProduct, isPriceInRange, isValidUsername, validateUserInput} from "../src/core";
 import {getCoupons} from "../src/core";
-import {calculateDiscount} from "../src/core";
+import {calculateDiscount,canDrive,fetchData} from "../src/core";
 
 describe("createProduct",()=>{
     it("should return success true and message Product was successfully published",()=>{
@@ -94,16 +94,15 @@ describe("validateUserInput",()=>{
 
 
 describe("isPriceInRange",()=>{
-    it("should return 1 if price is between or equal to min and max",()=>{
-        expect(isPriceInRange(50,1,100)).toBe(true);
-        expect(isPriceInRange(1,1,100)).toBe(true);
-        expect(isPriceInRange(100,1,100)).toBe(true);
-    })
-    it("should return false is price less than min",()=>{
-        expect(isPriceInRange(0,1,100)).toBe(false);
-    })
-    it("should return false if price bigger than max",()=>{
-        expect(isPriceInRange(101,1,100)).toBe(false);
+    it.each([
+        {price:50,min:1,max:100,result:true,scenario:"price is within the range"},
+        {price:1,min:1,max:100,result:true,scenario:"price is equal to min"},
+        {price:100,min:1,max:100,result:true,scenario:"price is equal to max"},
+        {price:0,min:1,max:100,result:false,scenario:"price is less than min"},
+        {price:101,min:1,max:100,result:false,scenario:"price is greater than max"}
+    ])
+    ("should return $result for $scenario",({ price,min,max,result})=>{
+        expect(isPriceInRange(price,min,max)).toBe(result);
     })
     it("should return invalid if price or min or max is not a number",()=>{
         expect(isPriceInRange("a",1,100)).toMatch(/invalid/i);
@@ -136,5 +135,50 @@ describe("isValidUsername",()=>{
     it("should return invalid username if username is null or undefined",()=>{
         expect(isValidUsername(null)).toMatch(/invalid/i)
         expect(isValidUsername(undefined)).toMatch(/invalid/i)
+    })
+})
+
+describe("canDrive",()=>{
+    it("should return invalid if countryCode is not US or UK",()=>{
+        expect(canDrive(18,"NA")).toMatch(/invalid/i);
+    })
+    it("should return invalid if age is not a number",()=>{
+        expect(canDrive("18","US")).toMatch(/invalid/i);
+    })
+    it("should return invalid if countryCode is not a string",()=>{
+        expect(canDrive(18,123)).toMatch(/invalid/i);
+    })
+
+    it.each([
+        {age:15,countryCode:"US",result:false},
+        {age:16,countryCode:"UK",result:false},
+        {age:16,countryCode:"US",result:true},
+        {age:17,countryCode:"UK",result:true},
+        {age:18,countryCode:"US",result:true},
+        {age:18,countryCode:"UK",result:true},
+        {age:19,countryCode:"US",result:true},
+        {age:19,countryCode:"UK",result:true}
+        
+    ])
+    ("should return $result for ($age,$countryCode)",({  age,countryCode,result})=>{
+        expect(canDrive(age,countryCode)).toBe(result);
+    })
+})
+
+describe("fetchData",()=>{
+    it("should return [1,2,3]",async()=>{
+        const result = await fetchData();
+        expect(Array.isArray(result)).toBe(true);
+        expect(result.length).toBe(3); 
+        expect(result).toEqual([1,2,3]);
+    })
+    it("should return error",async()=>{
+        try{
+            const result = await fetchData();
+        }
+        catch(error){
+            expect(error).toHaveProperty("reason");
+            expect(error.reason).toMatch(/fail/i);
+        }
     })
 })

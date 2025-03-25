@@ -71,6 +71,9 @@ export function isValidUsername(username) {
 
 // Exercise: Boundary testing
 export function canDrive(age, countryCode) {
+  if(typeof age !== 'number' || typeof countryCode !== 'string') {
+    return 'Invalid input';
+  }
   const legalDrivingAge = {
     US: 16,
     UK: 17,
@@ -85,6 +88,7 @@ export function canDrive(age, countryCode) {
 
 // Lesson: Testing asynchronous code
 export function fetchData() {
+  //return [1,2,3];
   return new Promise((resolve) => {
     setTimeout(() => {
       const data = [1, 2, 3];
