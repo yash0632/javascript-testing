@@ -13,7 +13,6 @@ describe('max',()=>{
     it('should expect any arguments if they are equal',()=>{
         expect(max(4,4)).toBe(4);
     })
-
 })
 
 describe("fizzBuzz",()=>{

@@ -1,6 +1,6 @@
-import {describe,expect,it} from "vitest";
+import {describe,expect,it,beforeAll,beforeEach,afterAll,afterEach} from "vitest";
 import {createProduct, isPriceInRange, isValidUsername, validateUserInput} from "../src/core";
-import {getCoupons} from "../src/core";
+import {getCoupons,Stack} from "../src/core";
 import {calculateDiscount,canDrive,fetchData} from "../src/core";
 
 describe("createProduct",()=>{
@@ -181,4 +181,103 @@ describe("fetchData",()=>{
             expect(error.reason).toMatch(/fail/i);
         }
     })
+})
+
+// describe('test suite',()=>{
+    
+//     beforeEach(()=>{
+//         console.log("before Each called")
+//     })
+//     beforeAll(()=>{
+//         console.log('before All called')
+//     })
+//     afterEach(()=>{
+//         console.log("after Each called")
+//     })
+//     afterAll(()=>{
+//         console.log("after All called")
+//     })
+//     it('test case 1',()=>{
+//         console.log("test case 1 called")
+//     })
+//     it('test case 2',()=>{
+//         console.log("test case 2 called")
+//     })
+// })
+
+describe('stack',()=>{
+    let stack;
+    beforeEach(()=>{
+        stack = new Stack();
+    })
+
+    it("should have an items property",()=>{
+        expect(stack).toHaveProperty("items");
+    })
+
+    it("should have items as an array",()=>{
+        expect(Array.isArray(stack.items)).toBe(true);
+    })
+
+    it("should push an item into items",()=>{
+        stack.push(1);
+        expect(stack.items).toEqual([1]);
+        expect(stack.items.length).toBe(1);
+        stack.push(2);
+        expect(stack.items).toEqual([1,2]);
+        expect(stack.items.length).toBe(2);
+    })
+
+    it("should return empty if stack is empty",()=>{
+        expect(() => stack.pop()).toThrow("Stack is empty");
+    })
+
+    it("should remove element on pop",()=>{
+        stack.push(1);
+        stack.push(2);
+        expect(stack.pop()).toBe(2);
+        expect(stack.items).toEqual([1]);
+        expect(stack.items.length).toBe(1);
+        expect(stack.pop()).toBe(1);
+        expect(stack.items).toEqual([]);
+        expect(stack.items.length).toBe(0);
+    })
+
+    it("should return top element if stack size greater than 0",()=>{
+        stack.push(1);
+        stack.push(2);
+        expect(stack.peek()).toBe(2);
+        stack.pop();
+        expect(stack.peek()).toBe(1);
+        stack.pop();
+        expect(()=>stack.peek()).toThrow("Stack is empty");
+    })
+
+    it("should return isEmpty as true if stack is empty otherwise false",()=>{
+        expect(stack.isEmpty()).toBe(true);
+        stack.push(1);
+        expect(stack.isEmpty()).toBe(false);
+        stack.pop();
+        expect(stack.isEmpty()).toBe(true);
+    })
+
+   it("should return size of stack",()=>{
+        expect(stack.size()).toBe(0);
+        stack.push(1);
+        expect(stack.size()).toBe(1);
+        stack.push(2);
+        expect(stack.size()).toBe(2);
+        stack.pop();
+        expect(stack.size()).toBe(1);
+        stack.pop();
+        expect(stack.size()).toBe(0);
+   })
+
+   it("should return clear of stack",()=>{
+        stack.push(1);
+        stack.push(2);
+        stack.clear();
+        expect(stack.size()).toBe(0);
+   })
+
 })
